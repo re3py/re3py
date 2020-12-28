@@ -1,7 +1,15 @@
+# my ignore
+data/datasets/yelp_big/yelp_big_descriptive.txt
+
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+.idea
 
 # C extensions
 *.so
