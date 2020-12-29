@@ -232,7 +232,7 @@ x1(example1, M)
 xN(example1, 2.2)
 x1(example2, F)
 ...
-xN(example2, 3,2)
+xN(example2, 3.2)
 ...
 ```
 
