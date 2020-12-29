@@ -34,13 +34,13 @@ The series of core examples is available in the ./examples folder.
 
 ## Relations
 In the code and in the input files, relations are thought of as sets whose elements are given exhaustively. Every such set contains tuples of objects of given types.
-For example, if `Ana likes potato`, `Ana likes beef`, `Bob likes beef`, `likes(Jacques, omlette)`, etc., this can be encoded as the relation
+For example, if `Ana likes potato`, `Ana likes beef`, `Bob likes beef`, `Jacques likes omlette`, etc., this can be encoded as the relation
 
 `likes(Person, Food) = {(Ana, potato), (Ana, beef), (Bob, beef), (Jacques, omlette), ...}`.
 
 The relation does not have to be binary. Any other arity (greater or equal to 1) is possible. For example, the ternary relation `loveTriangle(Person, Person, Person)` is given as  
 
-`loveTriangle(Person, Person, Person) = {loveTriangle(Ana, Bob, Charles)`, `loveTriangle(Denis, Dolores, Deborah), ...}`.
+`loveTriangle(Person, Person, Person) = {(Ana, Bob, Charles), (Denis, Dolores, Deborah), ...}`.
 
 ## Feature construction
 The method creates (ensembles of) trees where the internal nodes split the data into two groups according to the test `f(X) in S`, where `X` is the input example, `f` is a feature and `S` is some set of values. For example, the feature
@@ -61,7 +61,7 @@ where
 
 The set `S` is of form 
 
-- `[x, infinity)` or `(-infinity, x]` if the aggregate `agg1` returns numeric values (see below), or
+- `[x, infinity)` or `(-infinity, x]` (for some number x) if the aggregate `agg1` returns numeric values (see below), or
 - `S = {x1, x2, ..., xM}` where `xi` are some nominal values from the domain of `X1`.
 
 
@@ -69,9 +69,9 @@ The set `S` is of form
 
 In order to grow a tree (or an ensemble of trees), we need
 
-- a file with descriptive relations
-- a file with target relation
-- a settings file
+- a file with descriptive relations,
+- a file with target relation,
+- a settings file.
 
 The following sections describe each of them.
 
@@ -112,7 +112,7 @@ vegetarian(Charles, no)
 ```
 
 For a given datum, e.g., `vegetarian(Person, nominal)`, a learner uses only the `Person` part and returns a value of the type `nominal`.
-The values that we are predicting (above, these are the `yes` and `no` values) should always be on the last component in the tuples.
+The values that we are predicting (above, these are the `yes` and `no` values) should always be the last component in the tuples.
 
 Note that `vegetarian` is actually a unary relation. The trick with the additinal component is only necessary to make other problems (including multi-class or regression) simpler.
 For example, we can predict relations such as
