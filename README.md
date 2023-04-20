@@ -1,12 +1,24 @@
 # RE3PY - relational tree learners in python!
-Welcome to RE3PY's official repo. To install the library, please try 
-(latest):
+Welcome to RE3PY's official repo. To install the library, please try
 ```
-pip install -r requirements.txt
+pip install re3py
+```
 
-python setupy.py install
+or - if you want to install the library from sources - 
+move to the root directory (the one that contains `setup.py`) and try
+
 ```
+python setup.py install
+```
+
+
 For additional visualizations, please also install py3plex library via `pip install py3plex` call.
+
+## Extended library
+You are in the master branch. The other branch contains some prepared datasets and some results from the experiments.
+The results were probably interested only to reviewers.
+
+
 
 # Testing
 To execute the series of tests which determine proper installation, execute:
