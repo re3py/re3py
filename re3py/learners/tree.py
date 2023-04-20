@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Union
 from .core.aggregators import *
 from .core.comparators import *
 from .core.tree_node_split import BinarySplit
@@ -12,7 +12,7 @@ from ..utilities.my_utils import *
 import itertools
 import random
 from .predictive_model import PredictiveModel
-from time import clock
+import time
 import math
 import copy
 from .core.tree_node_split import TEST_VALUE_MEMO
@@ -307,7 +307,7 @@ class DecisionTree(PredictiveModel):
             return "Y"
 
     def initialize_statistics(self, node: TreeNode, data: List[Datum]):
-        t0 = clock()
+        t0 = time.time()
         statistics_class = self.target_data_stat.__class__
         initial_stats = statistics_class.construct_from_parent(
             self.target_data_stat)
@@ -315,11 +315,11 @@ class DecisionTree(PredictiveModel):
         node.set_stats(initial_stats)
         variability = self.heuristic.compute_variability(node.get_stats())
         node.get_stats().set_variability(variability)
-        t1 = clock()
+        t1 = time.time()
         self.statistics_time += t1 - t0
 
     def build(self, data: Dataset):
-        t0 = clock()
+        t0 = time.time()
         random.seed(self.random_seed)
         self.target_data_stat = data.get_copy_statistics()
         target_relation = data.get_target_relation()  # no examples - ok?
@@ -368,7 +368,7 @@ class DecisionTree(PredictiveModel):
             v.unset_value()
         for v in self.target_relation_variables:
             self.all_variables[v.get_name()] = v
-        t1 = clock()
+        t1 = time.time()
         self.induce_tree_time = t1 - t0
         self.print_times()
         # s = max(1, sum(used_comp_memo))
@@ -490,7 +490,7 @@ class DecisionTree(PredictiveModel):
                         example, rc_modified, filtered_agg_chains)
                 else:
                     r_key, a_keys = None, []
-                t0 = clock()
+                t0 = time.time()
 
                 if self.java_port is not None:
                     # do stuff here
@@ -503,20 +503,20 @@ class DecisionTree(PredictiveModel):
                 else:
                     all_test_values = []
                     for jj, datum in enumerate(target_data):
-                        u0 = clock()
+                        u0 = time.time()
                         for init_var_name, train_value in zip(
                                 target_relation_vars, datum.get_descriptive()):
                             example[init_var_name].set_value(train_value)
-                        u1 = clock()
+                        u1 = time.time()
                         self.set_example_values_time += u1 - u0
-                        u0 = clock()
+                        u0 = time.time()
                         all_test_values.append(
                             bs.get_test_values(example, rc_modified,
                                                filtered_agg_chains, r_key,
                                                a_keys, datum.identifier,
                                                nb_fresh_vars, fresh_indices,
                                                known_unknown))
-                        u1 = clock()
+                        u1 = time.time()
                         self.find_values_time += u1 - u0
                         # if jj % 10 == 0:
                         #     print(".", end="")
@@ -529,13 +529,13 @@ class DecisionTree(PredictiveModel):
                 #         raise ValueError("... :)")
                 # print()
 
-                t1 = clock()
+                t1 = time.time()
                 self.get_test_value_time += t1 - t0
-                t0 = clock()
+                t0 = time.time()
                 score, configuration = self.evaluate_candidate_splits(
                     current_node, all_test_values, target_data,
                     current_vars_per_type[0], filtered_output_types)
-                t1 = clock()
+                t1 = time.time()
                 self.split_eval_time += t1 - t0
                 if BinarySplit.is_better_than_previous(score, best_score):
                     best_score = score
@@ -685,15 +685,15 @@ class DecisionTree(PredictiveModel):
         for i in range(n_aggregators):
             xs = [x[i] for x in test_values]
             if filtered_output_types[i] == TYPE_NUMERIC:  # is numeric
-                t0 = clock()
+                t0 = time.time()
                 score, comparator, theta, partition = self.find_best_numeric(
                     parent, xs, target_data)
                 is_variable_free = True
-                t1 = clock()
+                t1 = time.time()
                 self.numeric_tests += 1
                 self.numeric_tests_time += t1 - t0
             else:  # is nominal: 'constant' or user defined type
-                t0 = clock()
+                t0 = time.time()
                 output_type = filtered_output_types[i]
                 if output_type in target_relation_vars:
                     var_candidates = sorted(
@@ -702,7 +702,7 @@ class DecisionTree(PredictiveModel):
                     var_candidates = []
                 score, comparator, theta, partition, is_variable_free = self.find_best_nominal(
                     parent, xs, target_data, var_candidates, output_type)
-                t1 = clock()
+                t1 = time.time()
                 self.nominal_tests_time += t1 - t0
             if BinarySplit.is_better_than_previous(score, best_score):
                 best_score = score
