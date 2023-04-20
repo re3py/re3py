@@ -2,6 +2,7 @@ from typing import List, Union
 from ..data.data_and_statistics import Dataset
 import random
 
+
 def create_folds(data: Dataset,
                  folds_file: Union[str, None] = None,
                  example_ids: Union[List[List[str]], None] = None,
@@ -53,7 +54,7 @@ def create_folds(data: Dataset,
                 example_ids[i % n_folds].append(example)
         folds = example_ids
     assert folds is not None
-    for i, fold1 in enumerate(folds):
+    for i, _ in enumerate(folds):
         training_testing_target = [[], []]
         for j, fold2 in enumerate(folds):
             for d in fold2:

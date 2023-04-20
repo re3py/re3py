@@ -46,8 +46,8 @@ def test_rf_classification(tnum, depth, treenum):
     for fold, (train_set, test_set) in enumerate(dataset_folds):
         rf = RandomForest(treenum,
                           **tree_params)  # DecisionTree(**tree_params)  #
-        rf.build(train_set)
-        rf.print_model('{}{}.txt'.format(experiment_name, fold))
+        rf.fit(train_set)
+        rf.dump_to_text('{}{}.txt'.format(experiment_name, fold))
         true_values_train = [
             e.get_target() for e in train_set.get_target_data()
         ]

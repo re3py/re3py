@@ -1,9 +1,9 @@
-from rrank.learners.tree import DecisionTree, create_constant_tree
-from learners.predictive_model import TreeEnsemble
-from learners.core.heuristic import *
+from re3py.learners.tree import DecisionTree, create_constant_tree
+from re3py.learners.predictive_model import TreeEnsemble
+from re3py.learners.core.heuristic import *
 from math import exp, log
-from rrank.ranking.ensemble_ranking import EnsembleRanking
-from data.data_and_statistics import get_all_target_values
+from re3py.ranking.ensemble_ranking import EnsembleRanking
+from re3py.data.data_and_statistics import get_all_target_values
 
 
 class GradientBoostingTask:
@@ -220,7 +220,7 @@ class GradientBoosting(TreeEnsemble):
             raise WrongValueException(
                 "Wrong target type: {}".format(data_type))
 
-    def build(self, input_data: Dataset):
+    def fit(self, input_data: Dataset):
         # find task
         self.task = GradientBoosting.find_task(input_data.get_target_data())
         if self.task in [
@@ -250,7 +250,7 @@ class GradientBoosting(TreeEnsemble):
                 'random_seed'] = self.ensemble_random.next_tree_seed()
             self.tree_parameters['heuristic'] = HeuristicVariance()
             self.trees.append(DecisionTree(**self.tree_parameters))
-            self.trees[-1].build(modified_data)
+            self.trees[-1].fit(modified_data)
             self.task.modify_tree(self.shrinkage, self.step_sizes[t],
                                   self.optimize_step_size, self.trees[-1])
             GradientBoosting.update_current_predictions(
@@ -287,7 +287,7 @@ class GradientBoosting(TreeEnsemble):
                 self.tree_parameters['heuristic'] = HeuristicVariance()
                 self.trees_per_class[-1].append(
                     DecisionTree(**self.tree_parameters))
-                self.trees_per_class[-1][i].build(modified_datasets[i])
+                self.trees_per_class[-1][i].fit(modified_datasets[i])
                 self.task.modify_tree(self.shrinkage, self.step_sizes[t],
                                       self.optimize_step_size,
                                       self.trees_per_class[-1][i])
@@ -512,7 +512,7 @@ class GradientBoosting(TreeEnsemble):
         else:
             return WrongValueException("Wrong task: {}".format(self.task))
 
-    def print_model(self, file_name):
+    def dump_to_text(self, file_name):
         f = open(file_name, "w")
         if self.class_dictionary:
             print("Class encoding: {}".format(self.class_dictionary), file=f)

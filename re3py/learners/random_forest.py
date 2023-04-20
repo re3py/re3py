@@ -29,7 +29,7 @@ class RandomForest(TreeEnsemble):
                 message.format(self.votes_aggregator,
                                RandomForest.votes_aggregators))
 
-    def build(self, data: Dataset):
+    def fit(self, data: Dataset):
         for t in range(self.nb_trees):
             print("Building tree {}".format(t + 1))
             self.tree_parameters[
@@ -38,7 +38,7 @@ class RandomForest(TreeEnsemble):
             tree_data = data.bootstrap_replicate(
                 self.ensemble_random.next_bootstrap_seed(),
                 per_class=self.trees[-1].per_class_bootstrap)
-            self.trees[-1].build(tree_data)
+            self.trees[-1].fit(tree_data)
 
     def compute_ranking(self, ranking_type):
         feature_ranking = EnsembleRanking({}, {}, ranking_type, self.nb_trees)
@@ -79,7 +79,7 @@ class RandomForest(TreeEnsemble):
         else:
             raise NotImplementedError(":DD")
 
-    def print_model(self, file_name):
+    def dump_to_text(self, file_name):
         f = open(file_name, "w")
         for i, tree in enumerate(self.trees):
             print("Tree {}:".format(i + 1), file=f)

@@ -202,7 +202,7 @@ class EnsembleRanking:
         return sorted(dictionary.keys(), key=lambda k: sums[k],
                       reverse=True), sums
 
-    def print_ranking(self, file_name):
+    def dump_to_text(self, file_name):
         f = open(file_name, "w")
         print(str(self), file=f)
         f.close()

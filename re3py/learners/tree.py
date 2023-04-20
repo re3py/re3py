@@ -207,7 +207,7 @@ class DecisionTree(PredictiveModel):
                 yield node
                 stack += node.get_children()[::-1]
 
-    def print_model(self, file_name):
+    def dump_to_text(self, file_name):
         f = open(file_name, "w")
         print(str(self), file=f)
         f.close()
@@ -318,7 +318,7 @@ class DecisionTree(PredictiveModel):
         t1 = time.time()
         self.statistics_time += t1 - t0
 
-    def build(self, data: Dataset):
+    def fit(self, data: Dataset):
         t0 = time.time()
         random.seed(self.random_seed)
         self.target_data_stat = data.get_copy_statistics()
@@ -1410,5 +1410,5 @@ def create_new_variable(v_name, v_type, value=None):
 
 def create_constant_tree(heuristic: Heuristic, data: Dataset):
     t = DecisionTree(heuristic=heuristic, max_number_internal_nodes=0)
-    t.build(data)
+    t.fit(data)
     return t
