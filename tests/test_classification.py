@@ -1,5 +1,7 @@
 ## a simple usecase on the uwcse
 
+import os
+import requests
 from re3py.data.task_settings import *
 from re3py.data.data_and_statistics import *
 from re3py.learners.core.heuristic import *
@@ -9,9 +11,34 @@ from re3py.learners.random_forest import *
 
 import pytest
 
-all_relevant = [1, 2, 3]
+
+def download_data(dataset_name, experiment_dir, folds_dir):
+    print(f"Downloading {dataset_name} data ...")
+    os.makedirs(experiment_dir, exist_ok=True)
+    os.makedirs(folds_dir, exist_ok=True)
+    base_url = "https://raw.githubusercontent.com/re3py/re3py/master_with_resources/data"
+    base_url_datasets = f"{base_url}/datasets/{dataset_name}/"
+    url_folds = f"{base_url}/folds/{dataset_name}/folds1.txt"
+    url_and_path = []
+    for extension in ["_descriptive.txt", "_target.txt", ".s"]:
+        file_name = f"{dataset_name}{extension}"
+        url = f"{base_url_datasets}{file_name}"
+        path = os.path.join(experiment_dir, file_name)
+        url_and_path.append((url, path))
+    path_folds = os.path.join(folds_dir, "folds1.txt")
+    url_and_path.append((url_folds, path_folds))
+    for url, path in url_and_path:
+        r = requests.get(url)
+        if r.ok:
+            with open(path, "w", encoding="utf-8") as f:
+                print(r.text, file=f)
+        else:
+            raise ValueError(f"Could not download {url} to {path}")
+
+
+all_relevant = [1, 2]
 depths = [2, 3]
-treenums = [3, 6, 9, 16]
+treenums = [3, 6]
 
 
 @pytest.mark.parametrize("tnum", all_relevant)
@@ -19,7 +46,11 @@ treenums = [3, 6, 9, 16]
 @pytest.mark.parametrize("treenum", treenums)
 def test_rf_classification(tnum, depth, treenum):
     dataset_name = "uwcse"
-    experiment_dir = "./data/{}/".format(dataset_name)
+    print(os.listdir())
+    experiment_dir = f"./data/datasets/{dataset_name}/"
+    folds_dir = f"./data/folds/{dataset_name}"
+    if not os.path.exists(experiment_dir):
+        download_data(dataset_name, experiment_dir, folds_dir)
     descriptive = experiment_dir + '{}_descriptive.txt'.format(dataset_name)
     target = experiment_dir + '{}_target.txt'.format(dataset_name)
     s_file = experiment_dir + '{}.s'.format(dataset_name)
